@@ -1,0 +1,86 @@
+#--------------------------- Tool Specifications -------------------------
+#
+# Modify the following macros to reflect the tools you wish to use for
+# compiling and linking your code.
+#
+CC = /Applications/MATLAB_R2014b.app/bin/mex
+LD = $(CC)
+ 
+MACHINE     = robot
+TARGET      = sfun
+CHART_SRCS   = c2_robot.c
+MACHINE_SRC  = robot_sfun.c
+MACHINE_REG = robot_sfun_registry.c
+MAKEFILE    = robot_sfun.mku
+MATLAB_ROOT  = /Applications/MATLAB_R2014b.app
+BUILDARGS   = 
+#------------------------------ Include/Lib Path ------------------------------
+ 
+USER_INCLUDES = 
+AUX_INCLUDES = 
+MLSLSF_INCLUDES  = \
+    -I"/Applications/MATLAB_R2014b.app/extern/include" \
+    -I"/Applications/MATLAB_R2014b.app/simulink/include" \
+    -I"/Applications/MATLAB_R2014b.app/stateflow/c/mex/include" \
+    -I"/Applications/MATLAB_R2014b.app/rtw/c/src" \
+    -I"/Users/macbook/Dropbox/controls_lab/labs/robot/slprj/_sfprj/robot/_self/sfun/src" 
+
+THIRD_PARTY_INCLUDES = 
+
+INCLUDE_PATH = $(USER_INCLUDES) $(AUX_INCLUDES) $(MLSLSF_INCLUDES) $(COMPILER_INCLUDES) $(THIRD_PARTY_INCLUDES)
+ 
+#----------------- Compiler and Linker Options --------------------------------
+ 
+# Optimization Options
+ 
+CC_OPTS = -O 
+CPP_REQ_DEFINES = -DMATLAB_MEX_FILE
+ 
+# Uncomment this line to move warning level to W4
+# cflags = $(cflags:W3=W4)
+CFLAGS = $(CC_OPTS) $(CPP_REQ_DEFINES) $(INCLUDE_PATH)
+ 
+LDFLAGS =  
+ 
+AUXLDFLAGS = 
+#----------------------------- Source Files -----------------------------------
+ 
+REQ_SRCS  = $(MACHINE_SRC) $(MACHINE_REG) $(CHART_SRCS)
+
+USER_ABS_OBJS =
+
+AUX_ABS_OBJS =
+THIRD_PARTY_OBJS =
+
+REQ_OBJS = $(REQ_SRCS:.cpp=.o)
+REQ_OBJS2 = $(REQ_OBJS:.c=.o)
+OBJS = $(REQ_OBJS2) $(USER_ABS_OBJS) $(AUX_ABS_OBJS) $(THIRD_PARTY_OBJS)
+OBJLIST_FILE = robot_sfun.mol
+SFCLIB = 
+AUX_LNK_OBJS = 
+USER_LIBS = 
+LINK_MACHINE_LIBS = 
+TMWLIB = -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwsf_runtime -L/Applications/MATLAB_R2014b.app/bin/maci64 -lfixedpoint -L/Applications/MATLAB_R2014b.app/bin/maci64 -lut -L/Applications/MATLAB_R2014b.app/bin/maci64 -lemlrt -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwmathutil -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwblas -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwsl_log_load_blocks -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwsimulink -L/Applications/MATLAB_R2014b.app/bin/maci64 -lmwipp 
+PARLIB = 
+  MAPCSF = /Applications/MATLAB_R2014b.app/tools/maci64/mapcsf
+   # RUN_MAPCSF_ON_UNIX is defined only if MAPCSF exists on this platform.
+   ifneq ($(wildcard $(MAPCSF)),) # run MAPCSF if it exists on this platform
+      RUN_MAPCSF_ON_UNIX =  /Applications/MATLAB_R2014b.app/tools/maci64/mapcsf $@
+   endif
+THIRD_PARTY_LIBS = 
+ 
+#--------------------------------- Rules --------------------------------------
+ 
+MEX_FILE_NAME = $(MACHINE)_$(TARGET).mexmaci64
+ 
+ $(MEX_FILE_NAME): $(MAKEFILE) $(OBJS) $(SFCLIB) $(AUX_LNK_OBJS) $(USER_LIBS)
+	@echo ### Linking ...
+	$(CC) -silent LDFLAGS="\$$LDFLAGS $(AUXLDFLAGS)" -output $(MEX_FILE_NAME) $(OBJS) $(AUX_LNK_OBJS) $(USER_LIBS) $(LINK_MACHINE_LIBS) $(SFCLIB) $(TMWLIB) $(PARLIB) $(IPPLIB) $(THIRD_PARTY_LIBS)
+	$(RUN_MAPCSF_ON_UNIX)
+
+%.o :    %.c
+	$(CC) -c $(CFLAGS) $<
+
+%.o :    %.cpp
+	$(CC) -c $(CFLAGS) $<
+
